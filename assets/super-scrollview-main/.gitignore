@@ -1,0 +1,10 @@
+/library
+/local
+/profiles
+/settings
+/temp
+/tsconfig.json
+/build
+.DS_Store
+
+.DS_Store
