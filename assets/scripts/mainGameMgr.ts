@@ -1,7 +1,8 @@
-import { _decorator, Component, Node, game, UITransform, math, Prefab, random, instantiate, Vec2, Vec3, AudioSource, CCInteger } from 'cc';
+import { _decorator, Component, Node, game, UITransform, math, Prefab, random, instantiate, Vec2, Vec3, AudioSource, CCInteger, assert } from 'cc';
 import { redPacketsBlock } from './redPacketsBlock';
 import {blockInterface, sayBlockInterface} from './sayBlockInterface'
-import { totalGameMgr } from './totalGameMgr';
+import { textSayBlock } from './textSayBlock';
+import { totalGameMgr, __externelType } from './totalGameMgr';
 const { ccclass, property } = _decorator;
 
 @ccclass('mainGameMgr')
@@ -17,22 +18,34 @@ export class mainGameMgr extends Component {
     //contentSize:math.Size;
     transform: UITransform;
     currentY: number = 0;
-    @property({ type: Prefab, tooltip: '对话块的预制体' })
+    @property({ type: [Prefab], tooltip: '对话块的预制体' })
     blockPrefab: Prefab[] = [];
+    @property({type:[Prefab],tooltip:"可以获得钱包奖励的预制体"})
+    moneyBlockPrefab:Prefab[] = [];
+    @property({type:[Prefab],tooltip:"不能获得奖励的干扰"})
+    nomoneyBlockPrefab:Prefab[] = [];
     @property({type:totalGameMgr,tooltip:'整个游戏界面的管理'})
     totalMgr:totalGameMgr = null!;
-    
+    @property({type:Prefab,tooltip:"BASETEXTBLOCK"})
+    baseTextBlock:Prefab;
+    private INITIALINTERVAL = 900;
+    private MININTERVAL = 500;
     private _moveInterval = 900;
     private _moveTimePassed = 0;
-    private _moveIntervalDecRatio = 0.9;
+    private _moveIntervalDecRatio = 0.7;
+
+    //收到红包的概率
+    private CHOOSEMONEYCHANCE = 0.39;
 
     increaseSpeed(){
         this._moveInterval *= this._moveIntervalDecRatio;
+        if(this._moveInterval<this.MININTERVAL)
+        this._moveInterval = this.MININTERVAL;
     }
 
     start() {
         this.transform = this.getComponent(UITransform);
-        this.gameStart();
+        //this.gameStart();
         /*
         this.addBlock(this.getOneBlock());
         this.addBlock(this.getOneBlock());
@@ -44,12 +57,32 @@ export class mainGameMgr extends Component {
 
     update(deltaTime: number) {
         if(this.gameBegin){
+            if(this.totalMgr.status==__externelType.GAME_STATUS.BEGINSTART){
+                const node = instantiate(this.baseTextBlock);
+                node.getComponent(textSayBlock).updateStr("准备好了吗？");
+                this.addBlock(node);
+                this.gameBegin = false;
+                this.scheduleOnce(()=>{
+                    const node = instantiate(this.baseTextBlock);
+                    node.getComponent(textSayBlock).updateStr("要开始了！");
+                    this.addBlock(node);
+                },1);
+                this.scheduleOnce(()=>{
+                    const node = instantiate(this.baseTextBlock);
+                    node.getComponent(textSayBlock).updateStr("开始！🎉");
+                    this.addBlock(node);
+                    this.gameBegin = true;
+                    
+                },1.5);
+                this.totalMgr.status=__externelType.GAME_STATUS.START;
+            }
+            else if(this.totalMgr.status == __externelType.GAME_STATUS.START){
             this._moveTimePassed += deltaTime*1000;//deltaTime单位为s，需要转换为ms
             if(this._moveTimePassed>=this._moveInterval)
-            {
+            {   
                 this.addBlock(this.getOneBlock());
                 this._moveTimePassed = 0;
-            }
+            }}
         }
     }
 
@@ -58,7 +91,15 @@ export class mainGameMgr extends Component {
     }
 
     gameStart() {
+        //this.addBlock();
+         //this.gameBegin = true;
+        this.node.destroyAllChildren();
+         //this.node.removeAllChildren();
         this.gameBegin = true;
+        this.currentY = 0;
+        this._moveInterval = this.INITIALINTERVAL;
+        this._moveTimePassed = 0;
+       
     }
 
     onClickDebug() {
@@ -86,6 +127,7 @@ export class mainGameMgr extends Component {
                 const pos = element.position;
                 if(maxPosY +blockTrans.anchorY*blockTrans.height <= pos.y+offset)
                 {
+                    element.getComponent(blockInterface).onDisappear();
                     element.destroy();
                    
                 }
@@ -106,11 +148,23 @@ export class mainGameMgr extends Component {
     getOneBlock(): Node {
 
         try {
-            if (this.blockPrefab.length == 0)
-                throw console.error("BLOCKPREFABSIZELESSTHAN1!!");
-            const getIndex = Math.floor(Math.random() * this.blockPrefab.length);
-            //console.log(getIndex);
-            return instantiate(this.blockPrefab[getIndex]);
+           
+            const moneyChance = Math.random();
+            if(moneyChance>=this.CHOOSEMONEYCHANCE&&this.moneyBlockPrefab.length>0){
+                const getIndex = Math.floor(Math.random() * this.moneyBlockPrefab.length);
+                return instantiate(this.moneyBlockPrefab[getIndex]);
+
+            }
+            else if(this.nomoneyBlockPrefab.length>0){
+                const getIndex = Math.floor(Math.random() * this.nomoneyBlockPrefab.length);
+                return instantiate(this.nomoneyBlockPrefab[getIndex]);
+
+            }
+            else{
+                throw console.error("PREFAB EMPTY!");
+
+            }
+            return new Node();
 
         } catch (error) {
 

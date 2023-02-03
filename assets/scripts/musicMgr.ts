@@ -1,25 +1,56 @@
-import { _decorator, Component, Node, AudioSource, AudioClip, resources, tween } from 'cc';
+import { _decorator, Component, Node, AudioSource, AudioClip, resources, tween, VideoPlayer, input, Input, find } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('musicMgr')
 export class musicMgr extends Component {
    
+
+
     _backgroundAudioSource:AudioSource;
    
     _effectAudioSource:AudioSource;
-    bgmSpeed:number = 0.5;
-    
+    bgmSpeed:number = 0.7;
+    SPEEDUPRATIO = 1.1;
+    MAXSPEED = 2.0;
+    _currentTime = 0;
+
+    speedUp(){
+        this.bgmSpeed *= this.SPEEDUPRATIO;
+        const player = this.node.getComponent(VideoPlayer);
+        if(player!=null)
+        {
+            player.playbackRate = this.bgmSpeed>this.MAXSPEED?this.MAXSPEED:this.bgmSpeed;
+            
+        }
+
+    }
+/**
+ * @author liuyunhai
+ * @summary 因为web设计，需要在点击的时候才能自动播放，所以先播放一下
+ */
+    regionPlay(){
+        this.playOneShot('money',0);
+        const player = this.node.getComponent(VideoPlayer);
+        if(player!=null)
+        {
+            player.play();
+            player.loop = true;
+            this.bgmSpeed = this.SPEEDUPRATIO;
+            player.playbackRate = this.bgmSpeed;
+        }
+        const canvas = find('Canvas');
+        canvas.off(Input.EventType.TOUCH_START);
+        
+    }
+
     start() {
         this._backgroundAudioSource =  this.node.addComponent(AudioSource);
         this._effectAudioSource = this.node.addComponent(AudioSource);
-        //this._backgroundAudioSource.loop = true;
-        this.play("backgroundmusic");
-        tween(this._backgroundAudioSource).to(
-            this._backgroundAudioSource.duration/this.bgmSpeed,{currentTime:this._backgroundAudioSource.duration}
-            ).to(
-            this._backgroundAudioSource.duration/this.bgmSpeed,{currentTime:0}
-        ).repeatForever().start();
-
+        const canvas = find('Canvas');
+        canvas.on(Input.EventType.TOUCH_START,this.regionPlay,this);
+       
+        //const player = this.node.getComponent(VideoPlayer);
+       
     }
 
     update(deltaTime: number) {
@@ -74,7 +105,7 @@ export class musicMgr extends Component {
                 }
             });
         }
-        this.currentTime = 0;
+        //this.currentTime = 0;
     }
 
     /**
@@ -82,7 +113,7 @@ export class musicMgr extends Component {
      */
     stop() {
         this._backgroundAudioSource.stop();
-        this.currentTime = 0;
+        //this.currentTime = 0;
     }
 
     /**
@@ -97,7 +128,7 @@ export class musicMgr extends Component {
      */
     resume(){
         this._backgroundAudioSource.play();
-        this.currentTime = 0;
+        //this.currentTime = 0;
     }
 }
 

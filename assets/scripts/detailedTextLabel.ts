@@ -1,10 +1,12 @@
-import { _decorator, Component, Node, Label, assert, UITransform, tween, Vec2, Input } from 'cc';
+import { _decorator, Component, Node, Label, assert, UITransform, tween, Vec2, Input, Sprite, SpriteFrame } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('detailedTextLabel')
 export class detailedTextLabel extends Component {
     @property({type:Label,tooltip:"文字子节点"})
     label:Label;
+    @property({type:Sprite,tooltip:"子图片节点"})
+    sprite:Sprite;
     str:string;
     constructor(str?:string){
         super();
@@ -15,6 +17,10 @@ export class detailedTextLabel extends Component {
         //this.label.string = info;
         //console.log(info+"hhh");
         this.node.getChildByName('Label').getComponent(Label).string = info;
+    }
+    updateSpriteFrame(info:SpriteFrame){
+        this.node.getChildByName('Sprite').getComponent(Sprite).spriteFrame = info;
+        //this.sprite.spriteFrame = info;
     }
     start() {
         //this.label.string = this.str;

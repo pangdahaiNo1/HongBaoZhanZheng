@@ -7,10 +7,6 @@ const { ccclass, property } = _decorator;
 export class redPacketsBlock extends blockInterface{
     finish:boolean = false;
     start() {
-        this.node.on(Input.EventType.TOUCH_START,(a)=>{
-            //console.log("JJJJJ");
-            this.changeOpac(0.5);
-        },this);
         this.node.on(Input.EventType.TOUCH_END,this.onClick,this);
         //this.node.on(Input.EventType.TOUCH_CANCEL,this.onClick)
     
@@ -26,17 +22,19 @@ export class redPacketsBlock extends blockInterface{
     }
     onClick(){
         //assert(this.gameMainView);
-        //this.changeOpac(1);
+        this.changeOpac(0.5);
+        if(!this.finish){
         this.finish = true;
-        this.gameMainView.getComponent(totalGameMgr).updateValue(Math.ceil(math.random()*this.moneyValue*100)/100,0);
+        this.gameMainView.getComponent(totalGameMgr).updateValue(Math.ceil(math.random()*this.moneyValue*100)/100,0);}
     }
     onDisappear(){
+        if(!this.finish)
         this.gameMainView.getComponent(totalGameMgr).updateValue(0,-this.punishValue);
     }
     onDisable(){
         //console.log("cicicici");
-        if(!this.finish)
-        this.onDisappear();
+        //if(!this.finish)
+        //this.onDisappear();
     }
     @property({type:Node,tooltip:'游戏主视图'})
     gameMainView:Node;
