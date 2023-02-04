@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, Enum, Input, Prefab, instantiate, assert, SpriteFrame } from 'cc';
+import { _decorator, Component, Node, Label, Enum, Input, Prefab, instantiate, assert, SpriteFrame, find } from 'cc';
 import { detailedTextLabel } from './detailedTextLabel';
 import { failureLabel } from './failureLabel';
 import { mainGameMgr } from './mainGameMgr';
@@ -66,6 +66,8 @@ export class totalGameMgr extends Component {
     }
 
     start() {
+        if(this.musicManager==null)
+        this.musicManager = find('music').getComponent(musicMgr);
         this.startGame();
        
     }

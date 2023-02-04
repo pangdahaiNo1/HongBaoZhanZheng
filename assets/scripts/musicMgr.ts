@@ -1,4 +1,5 @@
-import { _decorator, Component, Node, AudioSource, AudioClip, resources, tween, VideoPlayer, input, Input, find } from 'cc';
+import { _decorator, Component, Node, AudioSource, AudioClip, resources, tween, VideoPlayer, input, Input, find, director } from 'cc';
+import { dir } from 'console';
 const { ccclass, property } = _decorator;
 
 @ccclass('musicMgr')
@@ -15,8 +16,14 @@ export class musicMgr extends Component {
     _currentTime = 0;
 
     _firstSetUp = true;
+
+    constructor(){
+        super();
+        //设置常驻节点
+       
+    }
     speedUp(){
-        this.bgmSpeed *= this.SPEEDUPRATIO;
+        this.bgmSpeed = this.bgmSpeed*this.SPEEDUPRATIO;
         const player = this.node.getComponent(VideoPlayer);
         if(player!=null)
         {
@@ -24,6 +31,11 @@ export class musicMgr extends Component {
             
         }
 
+    }
+    disableVolumeAndPlay(){
+        if(this.node.getComponent(VideoPlayer)!=null){
+        this.node.getComponent(VideoPlayer).volume=0;
+        this.node.getComponent(VideoPlayer).play();}
     }
 /**
  * @author liuyunhai
@@ -34,23 +46,33 @@ export class musicMgr extends Component {
         const player = this.node.getComponent(VideoPlayer);
         if(player!=null)
         {
+            //input.off(Input.EventType.TOUCH_START,()=>{},this);
+            this.node.getComponent(VideoPlayer).volume=1;
+            //input.off(Input.EventType.TOUCH_START,()=>{},this);
             player.play();
             player.loop = true;
             this.bgmSpeed = 0.7;
             player.playbackRate = this.bgmSpeed;
             player.currentTime = 0;
-            console.log("PLAYER START");
+           // console.log("PLAYER START");
         }
-        const canvas = find('Canvas');
-        canvas.off(Input.EventType.TOUCH_START);
+        //const canvas = find('Canvas');
+        //canvas.off(Input.EventType.TOUCH_START);
+        
         
     }
 
     start() {
+        this.node.removeFromParent();
+        director.getScene().addChild(this.node);
+        director.addPersistRootNode(this.node);
+
+
         this._backgroundAudioSource =  this.node.addComponent(AudioSource);
         this._effectAudioSource = this.node.addComponent(AudioSource);
-        const canvas = find('Canvas');
-        canvas.on(Input.EventType.TOUCH_START,this.regionPlay,this);
+        //const canvas = find('Canvas');
+        //canvas.on(Input.EventType.TOUCH_START,this.regionPlay,this);
+        //input.on(Input.EventType.TOUCH_START,this.disableVolumeAndPlay,this);
        
         //const player = this.node.getComponent(VideoPlayer);
        
