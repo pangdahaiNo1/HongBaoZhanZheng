@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, game, UITransform, math, Prefab, random, instantiate, Vec2, Vec3, AudioSource, CCInteger, assert } from 'cc';
+import { _decorator, Component, Node, game, UITransform, math, Prefab, random, instantiate, Vec2, Vec3, AudioSource, CCInteger, assert, tween, Layout, Widget, UIOpacity, Tween } from 'cc';
 import { redPacketsBlock } from './redPacketsBlock';
 import {blockInterface, sayBlockInterface} from './sayBlockInterface'
 import { textSayBlock } from './textSayBlock';
@@ -33,6 +33,7 @@ export class mainGameMgr extends Component {
     private _moveInterval = 900;
     private _moveTimePassed = 0;
     private _moveIntervalDecRatio = 0.7;
+    private RIGHTALIGN = 20;
 
     //收到红包的概率
     private CHOOSEMONEYCHANCE = 0.39;
@@ -141,8 +142,37 @@ export class mainGameMgr extends Component {
         }
         block.getComponent(blockInterface).gameMainView = this.totalMgr.node;
         this.node.addChild(block);
-        block.setPosition(regionPoint);
+        
+        if(block.getComponent(Widget)==null){
+            const widget = block.addComponent(Widget);
+            widget.right = 20;
 
+        }
+        if(block.getComponent(UIOpacity)==null){
+            block.addComponent(UIOpacity);
+        }
+        block.getComponent(UIOpacity).opacity = 100;
+        //所有子部件都要Widget
+        block.getComponent(Widget).updateAlignment();
+        //配置一下动画
+        regionPoint.x = block.position.x;
+        //这里没有考虑方向，全都放置在左边了
+        block.getComponent(Widget).enabled = false;
+        //block.getComponent(Widget).updateAlignment
+        //console.log(regionPoint.x);
+        regionPoint.x += 60;
+        block.setPosition(regionPoint);
+        //regionPoint.x -= 30;
+        const a = tween(block).by(0.2,{position:new Vec3(-60,0,0)},{
+            easing: 'smooth',
+            onUpdate: (target: Node, ratio: number) => {        // onUpdate 接受当前缓动的进度
+                                 // 将缓动系统计算出的结果赋予 node 的位置
+              //console.log(ratio);
+              target.getComponent(UIOpacity).opacity = 100 + (255-100)*ratio;
+            }
+        }).start();
+        //const b = tween(block.getComponent(UIOpacity)).to(0.2,{opacity:255});
+        
 
     }
     getOneBlock(): Node {

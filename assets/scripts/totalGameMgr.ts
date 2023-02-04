@@ -3,6 +3,7 @@ import { detailedTextLabel } from './detailedTextLabel';
 import { failureLabel } from './failureLabel';
 import { mainGameMgr } from './mainGameMgr';
 import { musicMgr } from './musicMgr';
+import { rewardNotificationBlk } from './rewardNotificationBlk';
 const { ccclass, property } = _decorator;
 
 
@@ -40,6 +41,8 @@ export class totalGameMgr extends Component {
     musicManager:musicMgr;
     @property({type:Node})
     mainGameView:Node;
+    @property({type:Node,tooltip:"每次获得金钱都会调用的"})
+    rewardNotificationNode:Node;
     @property({type:Prefab,tooltip:"BASE_TEXT_LAYER"})
     textLayer:Prefab;
     @property({type:Prefab,tooltip:"FAILURE_LAYER"})
@@ -81,6 +84,7 @@ export class totalGameMgr extends Component {
                 console.log("FAIL!");
                 const layernodes = instantiate(this.failureLayer);
                 layernodes.getComponent(failureLabel).totalGameManager = this;
+                layernodes.getComponent(failureLabel).updateStr(this.moneyValue.getChildByName('moneyVal').getComponent(Label).string);
                 this.infoLayer.addChild(layernodes);
                 break;
             case __externelType.LAYER_TYPE.IMAGE_TEXT_LAYER:
@@ -108,7 +112,7 @@ export class totalGameMgr extends Component {
         {
             assert(this.musicManager);
             this.musicManager.playOneShot('money');
-
+            this.rewardNotificationNode.getComponent(rewardNotificationBlk).triggerAction(moneyVal);
             //判断加速的条件
             if(Math.floor(oldmonval/100)<Math.floor((oldmonval+moneyVal)/100)){
                 assert(this.mainGameView);

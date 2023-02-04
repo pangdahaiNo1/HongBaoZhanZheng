@@ -14,6 +14,7 @@ export class musicMgr extends Component {
     MAXSPEED = 2.0;
     _currentTime = 0;
 
+    _firstSetUp = true;
     speedUp(){
         this.bgmSpeed *= this.SPEEDUPRATIO;
         const player = this.node.getComponent(VideoPlayer);
@@ -35,8 +36,10 @@ export class musicMgr extends Component {
         {
             player.play();
             player.loop = true;
-            this.bgmSpeed = this.SPEEDUPRATIO;
+            this.bgmSpeed = 0.7;
             player.playbackRate = this.bgmSpeed;
+            player.currentTime = 0;
+            console.log("PLAYER START");
         }
         const canvas = find('Canvas');
         canvas.off(Input.EventType.TOUCH_START);
