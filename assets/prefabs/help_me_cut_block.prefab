@@ -45,7 +45,7 @@
     },
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 300.5,
+      "x": 27.5,
       "y": 130,
       "z": 0
     },
@@ -409,7 +409,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 111.12,
+      "width": 105.56,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -444,7 +444,7 @@
       "b": 0,
       "a": 255
     },
-    "_string": "帮帮他！！1",
+    "_string": "帮帮他！！!",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 20,

@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Scene, director, tween, Vec3, SceneAsset, ProgressBar } from 'cc';
 import { assert } from 'console';
+import { H5GamesAds, InterstitialType } from '../adsense-h5g-api/H5GamesAds';
 const { ccclass, property } = _decorator;
 
 @ccclass('loadGameMgr')
@@ -29,7 +30,7 @@ export class loadGameMgr extends Component {
     }
 
     onLoad(){
-       
+      // H5GamesAds.showInterstitialAd(InterstitialType.Browse);
     }
     start() {
         const a = tween(this.title).to(0.3,{scale:new Vec3(1.3,1.3,1)});

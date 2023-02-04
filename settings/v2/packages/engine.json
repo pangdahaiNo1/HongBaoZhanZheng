@@ -98,13 +98,13 @@
         "_value": false
       },
       "tiled-map": {
-        "_value": true
+        "_value": false
       },
       "spine": {
         "_value": true
       },
       "dragon-bones": {
-        "_value": true
+        "_value": false
       },
       "marionette": {
         "_value": false
@@ -118,7 +118,6 @@
       "animation",
       "audio",
       "base",
-      "dragon-bones",
       "gfx-webgl",
       "gfx-webgl2",
       "intersection-2d",
@@ -126,7 +125,6 @@
       "physics-2d-box2d",
       "profiler",
       "spine",
-      "tiled-map",
       "tween",
       "ui",
       "video",

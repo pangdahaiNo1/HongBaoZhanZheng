@@ -53,7 +53,10 @@ export class totalGameMgr extends Component {
     FAILURE_NUM = 10;
 
     status:__externelType.GAME_STATUS = __externelType.GAME_STATUS.BEGINSTART;
-   
+
+    private _currentMoney = 0;
+    private _speedUpLevel = [100,300,900,1000,2000,3500];
+    private _speedUpIndex = 0;
 
     startGame(){
         this.moneyValue.getChildByName('moneyVal').getComponent(Label).string = '0';
@@ -104,19 +107,34 @@ export class totalGameMgr extends Component {
         }
     }
 
+    private _neewSpeedUP():boolean{
+       
+        if(this._currentMoney>=this._speedUpLevel[this._speedUpIndex]){
+
+            this._speedUpIndex++;
+            if(this._speedUpIndex>=this._speedUpLevel.length)
+            this._speedUpIndex = this._speedUpLevel.length - 1;
+            return true;
+
+        }
+        return false;
+    }
+
     updateValue(moneyVal:number,punishVal:number){
         //Input.EventType
         const oldmonval:number = Number(this.moneyValue.getChildByName('moneyVal').getComponent(Label).string);
         const oldpunishval:number = Number(this.punishValue.getChildByName('punishVal').getComponent(Label).string);
         this.moneyValue.getChildByName('moneyVal').getComponent(Label).string = (moneyVal + oldmonval).toFixed(2).toString();
         this.punishValue.getChildByName('punishVal').getComponent(Label).string = (punishVal + oldpunishval).toString();
+        this._currentMoney = moneyVal + oldmonval;
         if(moneyVal>0)
         {
             assert(this.musicManager);
             this.musicManager.playOneShot('money');
+            
             this.rewardNotificationNode.getComponent(rewardNotificationBlk).triggerAction(moneyVal);
             //判断加速的条件
-            if(Math.floor(oldmonval/100)<Math.floor((oldmonval+moneyVal)/100)){
+            if(this._neewSpeedUP()){
                 assert(this.mainGameView);
                 this.mainGameView.getComponent(mainGameMgr).increaseSpeed();
                 this.musicManager.speedUp();
