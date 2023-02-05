@@ -62,9 +62,12 @@ export class totalGameMgr extends Component {
         this.moneyValue.getChildByName('moneyVal').getComponent(Label).string = '0';
         this.punishValue.getChildByName('punishVal').getComponent(Label).string = this.FAILURE_NUM.toString();
         this.mainGameView.getComponent(mainGameMgr).gameStart();
+        this._speedUpIndex = 0;//重制index
+        this._currentMoney = 0;//重制金额
         this.status = __externelType.GAME_STATUS.BEGINSTART;
         this.infoLayer.destroyAllChildren();
         this.musicManager.regionPlay();
+
 
     }
 
