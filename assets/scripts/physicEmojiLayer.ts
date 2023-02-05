@@ -68,7 +68,7 @@ export class physicEmojiLayer extends Component {
 
 
     start() {
-        this.resetEmoji('🐯');
+        //this.resetEmoji('🐯');
     }
 
     update(deltaTime: number) {

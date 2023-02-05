@@ -58,7 +58,7 @@ export class totalGameMgr extends Component {
     @property({type:Prefab,tooltip:"表情特效LAYER"})
     emojiLayer:Prefab;
 
-    private _emojiLayer:Node;//节省资源，如果生成一次表情层，就不会销毁了
+    private _emojiLayer:Node = null;//节省资源，如果生成一次表情层，就不会销毁了
 
     FAILURE_NUM = 10;
 
@@ -72,6 +72,9 @@ export class totalGameMgr extends Component {
         this.moneyValue.getChildByName('moneyVal').getComponent(Label).string = '0';
         this.punishValue.getChildByName('punishVal').getComponent(Label).string = this.FAILURE_NUM.toString();
         this.mainGameView.getComponent(mainGameMgr).gameStart();
+        if(this._emojiLayer!=null)
+        this._emojiLayer.destroy();
+        this._emojiLayer = null;
         this._speedUpIndex = 0;//重制index
         this._currentMoney = 0;//重制金额
         this.status = __externelType.GAME_STATUS.BEGINSTART;
@@ -89,7 +92,7 @@ export class totalGameMgr extends Component {
     usingDifficultBlock(level:__externelType.DIFFICLUT_LEVEL):boolean{
 
         if(level==__externelType.DIFFICLUT_LEVEL.UPDATE_EMOJI_LAYER){
-            if(this._currentMoney >= 500)
+            if(this._currentMoney >= 300)
             return true;
         }
         return false;
@@ -128,10 +131,11 @@ export class totalGameMgr extends Component {
             case __externelType.LAYER_TYPE.PDD_LAYER:
                 const layernodey = instantiate(this.cutOneLayer);
                 this.infoLayer.addChild(layernodey);
-                break
+                break;
             case __externelType.LAYER_TYPE.EMOJI_JUMP_LAYER:
-                if(this._emojiLayer==null)
+                if(this._emojiLayer==null||this._emojiLayer==undefined)
                 {
+                   
                     this._emojiLayer = instantiate(this.emojiLayer);
                     this.infoLayer.addChild(this._emojiLayer);
                 }
