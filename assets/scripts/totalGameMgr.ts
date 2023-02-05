@@ -3,6 +3,7 @@ import { detailedTextLabel } from './detailedTextLabel';
 import { failureLabel } from './failureLabel';
 import { mainGameMgr } from './mainGameMgr';
 import { musicMgr } from './musicMgr';
+import { physicEmojiLayer } from './physicEmojiLayer';
 import { rewardNotificationBlk } from './rewardNotificationBlk';
 const { ccclass, property } = _decorator;
 
@@ -20,11 +21,16 @@ export namespace __externelType {
         BEGINSTART,
         START,
         FAILURE
-    }
+    };
     export enum MUSIC_TYPE{
         BACKGROUND,
         REDPACKET
-    }
+    };
+    export enum DIFFICLUT_LEVEL{
+        BASE_JUST_SPEED_UP,
+        UPDATE_EMOJI_LAYER,
+        UPDATE_YXH_LAYER
+    };
 }
 
 @ccclass('totalGameMgr')
@@ -49,13 +55,17 @@ export class totalGameMgr extends Component {
     failureLayer:Prefab;
     @property({type:Prefab,tooltip:"砍一刀"})
     cutOneLayer:Prefab;
+    @property({type:Prefab,tooltip:"表情特效LAYER"})
+    emojiLayer:Prefab;
+
+    private _emojiLayer:Node;//节省资源，如果生成一次表情层，就不会销毁了
 
     FAILURE_NUM = 10;
 
     status:__externelType.GAME_STATUS = __externelType.GAME_STATUS.BEGINSTART;
 
     private _currentMoney = 0;
-    private _speedUpLevel = [100,300,900,1000,2000,3500];
+    private _speedUpLevel = [100,300,600,1000,2000,3500,6000,10000,20000,50000,100000,200000];
     private _speedUpIndex = 0;
 
     startGame(){
@@ -69,6 +79,20 @@ export class totalGameMgr extends Component {
         this.musicManager.regionPlay();
 
 
+    }
+
+    /**
+     * @abstract 判断是否需要增加难度块，如果当前金额数在500以上，就增加表情块
+     * @param level 
+     * @returns 
+     */
+    usingDifficultBlock(level:__externelType.DIFFICLUT_LEVEL):boolean{
+
+        if(level==__externelType.DIFFICLUT_LEVEL.UPDATE_EMOJI_LAYER){
+            if(this._currentMoney >= 500)
+            return true;
+        }
+        return false;
     }
 
     start() {
@@ -105,6 +129,15 @@ export class totalGameMgr extends Component {
                 const layernodey = instantiate(this.cutOneLayer);
                 this.infoLayer.addChild(layernodey);
                 break
+            case __externelType.LAYER_TYPE.EMOJI_JUMP_LAYER:
+                if(this._emojiLayer==null)
+                {
+                    this._emojiLayer = instantiate(this.emojiLayer);
+                    this.infoLayer.addChild(this._emojiLayer);
+                }
+                this._emojiLayer.getComponent(physicEmojiLayer).resetEmoji(infor as string);
+
+                break;
             default:
                 break;
         }
@@ -128,6 +161,8 @@ export class totalGameMgr extends Component {
         const oldmonval:number = Number(this.moneyValue.getChildByName('moneyVal').getComponent(Label).string);
         const oldpunishval:number = Number(this.punishValue.getChildByName('punishVal').getComponent(Label).string);
         this.moneyValue.getChildByName('moneyVal').getComponent(Label).string = (moneyVal + oldmonval).toFixed(2).toString();
+        if(punishVal + oldpunishval<0)
+        punishVal = -oldpunishval;
         this.punishValue.getChildByName('punishVal').getComponent(Label).string = (punishVal + oldpunishval).toString();
         this._currentMoney = moneyVal + oldmonval;
         if(moneyVal>0)

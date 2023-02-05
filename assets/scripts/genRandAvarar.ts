@@ -8,34 +8,27 @@ const { ccclass, property, executeInEditMode } = _decorator;
 export class randAvatarList {
     private _avatarList:SpriteFrame[] = [];
     private _MAXSIZE = 6;
-    private _hasEmit = false;
-    eventTarget = new EventTarget();
-    constructor(){
-        for(let index=0;index<this._MAXSIZE;index++)
-        assetManager.loadRemote("https://picsum.photos/200.webp",(err,texture)=>{
-            //console.log(err == null||err == undefined);
-            //console.log(err);
-           if(texture!=null&&texture!=undefined){
-           this._avatarList.push(SpriteFrame.createWithImage(texture as ImageAsset));
-           if(this._hasEmit===false){
-            this._hasEmit = true;
-            console.log("EVENTFINISH");
-            const event =  new CustomEvent("FINISH",null);
-            this.eventTarget.dispatchEvent(event);
-                }
-            }else{
-                console.log(err);
-            }
-        
-    })
-    }
     
-    genAImage(): SpriteFrame|null {
-        if (this._avatarList.length != 0)
-            return this._avatarList[Math.floor(Math.random() * this._avatarList.length)];
+    
+    genAImage(sprite:Sprite){
+        //console.log("XXX");
+        if (this._avatarList!=null&&this._avatarList.length >= this._MAXSIZE){
+            console.log("NICCCCC!")
+            sprite.spriteFrame = this._avatarList[Math.floor(Math.random() * this._avatarList.length)];}
         else {
-            console.log("AIMAGE NULL!!!");
-            return null;
+            assetManager.loadRemote("https://picsum.photos/seed/"+(Math.random()*1000).toFixed(0).toString()+"/200/300.webp",(err,texture)=>{
+                if(err==null&&texture!=null&&texture!=undefined){
+                const spriteframe = SpriteFrame.createWithImage(texture as ImageAsset);
+                this._avatarList.push(spriteframe);
+                 console.log("EVENTFINISH");
+                 sprite.spriteFrame = spriteframe;
+                 }else{
+                     console.log(err);
+                 }
+             
+         });
+            //console.log("AIMAGE NULL!!!");
+            //return null;
         }
     }
 }
@@ -44,29 +37,25 @@ export class randAvatarList {
 @executeInEditMode(true)
 export class genRandAvarar extends Component {
     static avatarGen = new randAvatarList();
-    //private _tempThis = this;
-    constructor(){
-        super();
-        
-
-    }
     onLoad(){
-        genRandAvarar.avatarGen.eventTarget.addEventListener("FINISH",(e)=>{
-            console.log("FINISH");
-            if(this.node.getComponent(Sprite)==null)
+        //genRandAvarar.avatarGen.eventTarget.addEventListener("FINISH",(e)=>{
+            //console.log("GENIMAGE");
+        if(this.node.getComponent(Sprite)==null)
         this.node.addComponent(Sprite);
 
-        const frame = genRandAvarar.avatarGen.genAImage();
-        this.node.getComponent(Sprite).spriteFrame = frame;
-        },true);
+        genRandAvarar.avatarGen.genAImage(this.node.getComponent(Sprite));
+        //this.node.getComponent(Sprite).spriteFrame = frame;
+    
     }
     start() {
-
+       // if(this.node.getComponent(Sprite)==null)
+       // this.node.addComponent(Sprite);
+       // const frame = genRandAvarar.avatarGen.genAImage();
+       // if(frame!=null)
+       // this.node.getComponent(Sprite).spriteFrame = frame;
       
     }
     update(deltaTime: number) {
-        //console.log("hello");
-        //console.log(deltaTime);
     }
 
 

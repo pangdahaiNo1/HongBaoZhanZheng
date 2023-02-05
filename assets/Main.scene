@@ -150,7 +150,7 @@
     "_priority": 1073741824,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 447.99999999999994,
+    "_orthoHeight": 448,
     "_near": 0,
     "_far": 2000,
     "_color": {
@@ -1891,6 +1891,10 @@
     },
     "cutOneLayer": {
       "__uuid__": "bcebc6bc-7554-4f0f-b974-73427e17f7bf",
+      "__expectedType__": "cc.Prefab"
+    },
+    "emojiLayer": {
+      "__uuid__": "ec45764a-a2cf-474f-b52c-7dbe896f76c0",
       "__expectedType__": "cc.Prefab"
     },
     "_id": "78mY2JiI9EWYQRWIdvPHHB"

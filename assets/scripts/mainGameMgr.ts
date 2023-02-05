@@ -105,7 +105,7 @@ export class mainGameMgr extends Component {
 
     onClickDebug() {
         this.addBlock(this.getOneBlock());
-        console.log(this.node.children.length);
+        //console.log(this.node.children.length);
     }
 
     addBlock(block: Node) {
@@ -120,7 +120,7 @@ export class mainGameMgr extends Component {
             const newY = -this.transform.height + (1-this.transform.anchorPoint.y) * this.transform.height + blockTrans.anchorPoint.y * blockTrans.height;
             
             const offset = newY - regionPoint.y;
-            console.log("OFFSET"+offset);
+            //console.log("OFFSET"+offset);
             regionPoint.y = newY;
             //如果超过这个Y，就把这个块删除
             const maxPosY = (1-this.transform.anchorPoint.y)*this.transform.height;
@@ -160,10 +160,10 @@ export class mainGameMgr extends Component {
         block.getComponent(Widget).enabled = false;
         //block.getComponent(Widget).updateAlignment
         //console.log(regionPoint.x);
-        regionPoint.x += 60;
+        regionPoint.x -= 60;
         block.setPosition(regionPoint);
         //regionPoint.x -= 30;
-        const a = tween(block).by(0.2,{position:new Vec3(-60,0,0)},{
+        const a = tween(block).by(0.2,{position:new Vec3(60,0,0)},{
             easing: 'smooth',
             onUpdate: (target: Node, ratio: number) => {        // onUpdate 接受当前缓动的进度
                                  // 将缓动系统计算出的结果赋予 node 的位置
